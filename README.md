@@ -11,7 +11,7 @@ arxiv-astro-summarizer is an open-source program for scraping Astro-ph papers fr
 
 # Documentation
 
-For technical details and an example of how to implement arxiv-astro-summarizer, check out the Documentation.
+For technical details and an example of how to implement arxiv-astro-summarizer, check out the Documentation: https://arxiv-astro-summarizer.readthedocs.io/en/latest/
 
 
 # How to Contribute?
