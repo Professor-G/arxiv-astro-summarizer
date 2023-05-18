@@ -5,7 +5,7 @@
 
 Welcome to arxiv-astro-summarizer's documentation!
 ===============================
-arxiv-astro-summarizer is an open-source program for scraping Astro-ph papers from the arXiv on some given date, summarizing the abstract, and comparing the similarity between the preprocessed abstract text and some specified user input. Can be used with scrape daily papers and filter for those relevant to some research topic.
+arxiv-astro-summarizer is an open-source program for scraping Astro-ph papers from the arXiv on some given date, summarizing the abstract, and comparing the similarity between the preprocessed abstract text and some specified user input. Can be used to scrape daily papers and filter for those relevant to some research topic.
 
 
 Installation
