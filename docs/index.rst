@@ -21,7 +21,7 @@ Example
 
 .. code-block:: python
    
-   from arxiv-astro-summarizer import astroph_summarizer
+   from arxiv_astro_summarizer import astroph_summarizer
 
    scraper = astroph_summarizer.Scraper('2023-05-12', user_input='Black holes', path='/Users/daniel/Desktop/test')
 
