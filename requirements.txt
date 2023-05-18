@@ -8,3 +8,4 @@ scikit-learn == 1.2.2
 nltk == 3.8.1
 textract == 1.6.5
 datefinder == 0.7.3
+tensorflow == 2.9.1
