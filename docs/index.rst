@@ -22,8 +22,9 @@ Example
 .. code-block:: python
    
    from arxiv_astro_summarizer import astroph_summarizer
-
-   scraper = astroph_summarizer.Scraper('2023-05-12', user_input='Black holes', path='/Users/daniel/Desktop/test')
+   
+   #Create the class object
+   scraper = astroph_summarizer.Scraper(date='2023-05-12', user_input='Black holes', path='/Users/daniel/Desktop/test')
 
    #Scrape papers from the input date
    scraper.scrape_arxiv()
