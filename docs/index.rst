@@ -29,7 +29,7 @@ Example
    #Scrape papers from the input date
    scraper.scrape_arxiv()
 
-   #Scrape all papers that were scraped
+   #Save all papers that were scraped
    scraper.save_paper(index='all')
 
    #Summarize the abstract of all papers and save the similary score
