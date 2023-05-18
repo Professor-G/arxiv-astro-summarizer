@@ -35,6 +35,9 @@ Example
    #Summarize the abstract of all papers and save the similary score
    scraper.summarize()
 
+   #Print the dataframe
+   scraper.df 
+   
    #Remove the papers with similarity scores less than some threshold 
    scraper.remove_irrelevant_papers(similarity_threshold=0)
 
