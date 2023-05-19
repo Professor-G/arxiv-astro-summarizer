@@ -1,4 +1,4 @@
 [build-system]
-requires = ["setuptools>=42", "wheel", "numpy", "requests==2.27.1", "arxivscraper==0.0.5", "pandas==1.4.2", "PyPDF2==3.0.1", "transformers==4.29.1", "scikit-learn==1.2.2", "nltk==3.8.1", "textract==1.6.5", "datefinder==0.7.3", "tensorflow==2.9.1", "torch==2.0.0"]
+requires = ["setuptools>=42", "wheel", "numpy", "requests==2.27.1", "arxivscraper==0.0.5", "pandas==1.4.2", "PyPDF2==3.0.1", "transformers==4.29.1", "scikit-learn==1.2.2", "nltk==3.8.1", "textract==1.6.5", "datefinder==0.7.3", "tensorflow==2.9.1", "torch==2.0.0", "progress==1.6"]
 build-backend = "setuptools.build_meta"
 
