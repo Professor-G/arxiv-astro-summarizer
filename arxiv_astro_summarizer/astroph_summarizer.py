@@ -390,7 +390,7 @@ class Scraper:
             try:
                 self.extract_abstract_from_pdf(filename=self.path+fname) #Creates the ``raw_text`` attribute
             except MissingFileError: 
-                print(f"WARNING: Could not find file: {self.path+fname}")
+                print(); print(f"WARNING: Could not find file: {self.path+fname}")
 
             if self.raw_text == '':
                 print(f"Could not extract abstract for: {fname}")
