@@ -6,17 +6,25 @@ Created on Mon May 15 20:10:00 2023
 @author: daniel
 """
 import re
+import logging
 import requests
+import unicodedata
+import textract
+import datefinder
+from progress import bar
+
 import arxivscraper
 import numpy as np 
 import pandas as pd
 from pathlib import Path
 from PyPDF2 import PdfReader
 from datetime import datetime
-from transformers import pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from transformers import pipeline
+logging.getLogger("transformers").setLevel(logging.ERROR)
 import os; os.environ['TOKENIZERS_PARALLELISM'] = 'false'
+from textract.exceptions import MissingFileError
 
 import nltk
 try:
@@ -27,10 +35,6 @@ nltk.download('stopwords'); nltk.download('stopwords'); nltk.download('wordnet')
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-
-import unicodedata
-import textract
-import datefinder
 
 class Scraper:
     """
@@ -240,10 +244,14 @@ class Scraper:
             return filename
 
         if self.df is None:
-            raise ValueError('Meta-data has not been scraped! Run the scrape_arxiv() class method first. ')
+            raise ValueError('Meta-data has not been scraped, run the scrape_arxiv() class method first!')
            
         if index == 'all':
+
+            progess_bar = bar.FillingSquaresBar('Saving files......', max=len(self.df))
+            
             for i in range(len(self.df)):
+
                 filename = format_filename(self.df.iloc[i].authors[0].split()[-1] + '_' + self.df.iloc[i].created[:4]) # Filename, author_YYYY
 
                 try:
@@ -260,7 +268,13 @@ class Scraper:
                         #print(f"{filename[:-4]} outside date range, removing...")
                 except Exception as e:
                     print('An error occurred while downloading the PDF: {}'.format(str(e)))
+
+                progess_bar.next()
+
+            progess_bar.finish()
+
         else:
+
             filename = format_filename(self.df.iloc[index].authors[0].split()[-1] + '_' + self.df.iloc[index].created[:4])  # Filename, author_YYYY
 
             try:
@@ -274,11 +288,9 @@ class Scraper:
                     self.filenames.append(filename)
                 else:
                     os.remove(self.path + filename)
-                    #print('File outside date range, removing...')
+                    #print(f"{filename[:-4]} outside date range, removing...")
             except Exception as e:
                 print('An error occurred while downloading the PDF: {}'.format(str(e)))
-
-        print('Complete!')
 
         return
 
@@ -372,8 +384,14 @@ class Scraper:
         
         summaries, authors, similarity_score = [], [], []
 
+        progess_bar = bar.FillingSquaresBar('Summarizing.......', max=len(self.filenames))
+
         for fname in self.filenames:
-            self.extract_abstract_from_pdf(filename=self.path+fname) #Creates the ``raw_text`` attribute
+            try:
+                self.extract_abstract_from_pdf(filename=self.path+fname) #Creates the ``raw_text`` attribute
+            except MissingFileError: 
+                print(f"WARNING: Could not find file: {self.path+fname}")
+
             if self.raw_text == '':
                 print(f"Could not extract abstract for: {fname}")
                 summaries.append('!!!Could not extract abstract!!!'); authors.append(fname)
@@ -385,7 +403,7 @@ class Scraper:
          
             # Generate summary
             summarizer = pipeline('summarization', model='sshleifer/distilbart-cnn-12-6', revision='a4f8f3e')
-
+        
             try:
                 # Tokenize self.text
                 tokenized_text = word_tokenize(self.text)
@@ -412,6 +430,10 @@ class Scraper:
             except Exception as e:
                 print(f"Error occurred while summarizing {fname}: {str(e)}")
 
+            progess_bar.next()
+
+        progess_bar.finish()
+
         if self.user_input is None:
             self.df = pd.DataFrame({'Author': authors, 'Summary': summaries}, columns=['Author', 'Summary'])
         else:
@@ -434,7 +456,7 @@ class Scraper:
         """
 
         if self.user_input is None:
-            raise ValueError('The user_input attribute has not been configured!')
+            raise ValueError('The user_input attribute has not been input!')
 
         # Initialize the TF-IDF vectorizer
         vectorizer = TfidfVectorizer(stop_words='english')
@@ -456,7 +478,7 @@ class Scraper:
         """
 
         if self.df is None:
-            raise ValueError('The df attribute does not yet exist! Run the summarize() class method first!')
+            raise ValueError('The df attribute does not yet exist, run the summarize() class method first!')
 
         indices = np.where(self.df.Similarity <= similarity_threshold)[0]
 
@@ -505,11 +527,3 @@ def replace_astronomical_terms(text):
         text = text.replace(term.capitalize(), replacement)
 
     return text
-
-
-#scraper = Scraper('2023-05-12', path='/Users/daniel/Desktop/testst')
-#scraper.scrape_arxiv()
-#scraper.save_paper(index='all')
-
-
-
