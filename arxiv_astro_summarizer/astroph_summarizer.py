@@ -440,6 +440,8 @@ class Scraper:
             self.df = pd.DataFrame({'Author': authors, 'Summary': summaries, 'Similarity': similarity_score}, columns=['Author', 'Summary', 'Similarity'])
             self.df = self.df.sort_values(by='Similarity', ascending=False)
 
+        self.df = self.df.reset_index(drop=True)
+
         return 
 
     def is_related(self, summary):
