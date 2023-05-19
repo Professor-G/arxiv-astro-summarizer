@@ -485,8 +485,11 @@ class Scraper:
         indices = np.where(self.df.Similarity <= similarity_threshold)[0]
 
         for index in indices:
-            os.remove(self.path+self.df.Author.iloc[index])
-
+            try:
+                os.remove(self.path+self.df.Author.iloc[index])
+            except FileNotFoundError:
+                pass 
+                
         print(f"Complete! The following directory now contains only relevant papers: {self.path}")
 
         return 
