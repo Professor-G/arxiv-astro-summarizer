@@ -31,7 +31,7 @@ Example: Single Date
    #Save all papers that were scraped
    scraper.save_paper(index='all')
 
-   #Summarize the abstract of all papers and save the similary score
+   #Summarize the abstract of all papers and save the similarity score
    scraper.summarize()
 
    #Print the dataframe
@@ -54,12 +54,12 @@ Given a continuous date range, you can use the ``scrape_and_analyze`` function, 
 
    astroph_summarizer.scrape_and_analyze(start_date, end_date, user_input=user_input, similarity_threshold=similarity_threshold, path=None)
 
-Note that the ``similarity_threshold`` parameter can be set to ``None``, in which case all papers within the date range will be saved.
+Note that the ``similarity_threshold`` parameter can be set to ``None``, in which case all papers within the specified date range will be saved.
 
 Important
 ------------
 
-This program employs the use of word lemmatizers to improve text summarization by transforming words into their base forms and capturing alternative words or synonyms. This integration enhances the program's ability to generate concise and informative summaries that accurately reflect the original text. Nonetheless, as with all large language models, the more specific the ``user_input`` is, the more accurate the calculated similarity score will be -- as such, it is advised to keep the input as concise as possible and to avoid the use of stop words.
+This program employs the use of word lemmatizers to improve text summarization by transforming words into their base forms and capturing alternative words or synonyms. This integration enhances the program's ability to generate concise and informative summaries that accurately reflect the original text. Nonetheless, as with all large language models, the more specific the ``user_input`` is, the more accurate the calculated similarity score will be -- as such, **it is advised to keep the input as concise as possible and to avoid the use of stop words.**
 
 Pages
 ==================
