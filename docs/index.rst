@@ -1,4 +1,4 @@
-.. REPONAME documentation master file, created by
+.. arxiv-astro-summarizer documentation master file, created by
    sphinx-quickstart on Thu Mar 24 11:15:14 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -44,7 +44,7 @@ Example: One Date
 Example: Date Range
 ==================
 
-Given a continuous date range, you can use the scrape_and_analyze function, which will automatically perform the above steps for you for each individual date:
+Given a continuous date range, you can use the ``scrape_and_analyze`` function, which will loop through the dates to automatically perform the above steps for you:
 
 .. code-block:: python
 
@@ -55,7 +55,7 @@ Given a continuous date range, you can use the scrape_and_analyze function, whic
 
    astroph_summarizer.scrape_and_analyze(start_date_str, end_date_str, user_input=user_input, similarity_threshold=similarity_threshold, path=None)
 
-Note that the similarity_threshold parameter can be set to None, in which case no similarity score will be compared and instead all papers within the date range will be saved.
+Note that the ``similarity_threshold`` parameter can be set to ``None``, in which case all papers within the date range will be saved.
 
 Pages
 ==================
