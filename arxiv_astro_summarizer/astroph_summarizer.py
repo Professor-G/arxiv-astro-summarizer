@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 from PyPDF2 import PdfReader
-from datetime import datetime
+from datetime import datetime, timedelta
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from transformers import pipeline
@@ -41,7 +41,7 @@ class Scraper:
     Class object to scrape, read, and analyze arXiv papers published on a given date.
 
     Args:
-        date (str): The initial date to consider for scraping, in the following format: YYYY-MM-DD, e.g. '2022-05-12'.
+        date (str): The date to consider for scraping, in the following format: YYYY-MM-DD, e.g. '2022-05-12'.
         user_input (str, optional): A short excerpt describing the kind of papers the user is interested in. Defaults to None.
         path (str, optional): The path where the file should be saved. Defaults to None, which saves the files to the local home directory.
 
@@ -53,22 +53,6 @@ class Scraper:
 
     Raises:
         ValueError: If the input date is not a string or if user_input is not a string when provided.
-
-    Examples:
-        Initialize the Scraper object with a date and user input:
-        >>> scraper = Scraper('2022-05-12', user_input='black hole')
-
-        Scrape arXiv papers for the given date:
-        >>> scraper.scrape_arxiv()
-
-        Save a specific paper using its index in the scraped metadata, or set to 'all' to save all papers:
-        >>> scraper.save_paper(0)
-
-        Summarize the saved papers and score the relevance between the summary and the user_input:
-        >>> scraper.summarize()
-
-        Remove papers with similarity scores less than or equal to the specified similarity_threshold (defaults to 0)
-        >>> scraper.remove_irrelevant_papers(similarity_threshold=0)
     """
 
     def __init__(self, date, user_input=None, path=None):
@@ -97,6 +81,9 @@ class Scraper:
         Converts a date string from 'YYYY-MM-DD' format to 'DD Month YYYY' format.
         This will be used to keyword search the paper, to ensure that the publication 
         times are consistent with the input date.
+        
+        Args:
+            None 
 
         Returns:
             str: The date string in 'DD Month YYYY' format.
@@ -194,6 +181,9 @@ class Scraper:
         """
         Compiles the metadata of the arxiv papers uploaded on a given day. Scraping
         date ranges is not currently supported!
+
+        Args:
+            None
     
         Returns:
             Pandas dataframe with the following meta-data: 'id', 'title', 'categories', 'abstract', 'doi', 'created', 'updated', 'authors'
@@ -476,11 +466,21 @@ class Scraper:
         Removes the papers that have similarity scores less than or equal to the specified similarity_threshold.
 
         Args:
-            similarity_threshold
+            similarity_threshold (float): Papers with similarity scores below this threshold will be deleted.
+                Defaults to 0. Can be set to None to keep all papers.
+        
+        Returns:
+            None
         """
+
+        if similarity_threshold is None:
+            return 
 
         if self.df is None:
             raise ValueError('The df attribute does not yet exist, run the summarize() class method first!')
+
+        if len(np.where(self.df.Similarity > similarity_threshold)[0]) == 0:
+            print('NOTE: No papers with similarity scores above the similarity_threshold were detected! Removing all...')
 
         indices = np.where(self.df.Similarity <= similarity_threshold)[0]
 
@@ -489,10 +489,74 @@ class Scraper:
                 os.remove(self.path+self.df.Author.iloc[index])
             except FileNotFoundError:
                 pass 
-                
+        
         print(f"Complete! The following directory now contains only relevant papers: {self.path}")
 
         return 
+
+def scrape_and_analyze(start_date_str, end_date_str, user_input=None, similarity_threshold=None, path=None):
+    """
+    Scrape and process astrophysics papers from arXiv for a range of dates (Monday to Friday only!).
+    
+    Example:
+        >>> start_date_str = '2023-04-01'
+        >>> end_date_str = '2023-04-30'
+        >>> scrape_and_analyze(start_date_str, end_date_str)
+
+    Args:
+        start_date_str (str): The start date in the format 'YYYY-MM-DD'.
+        end_date_str (str): The end date in the format 'YYYY-MM-DD'.
+        user_input (str, optional): A short excerpt describing the kind of papers the user is interested in. Defaults to None.
+        similarity_threshold (float): Papers with similarity scores below this threshold will be deleted.
+            Defaults to 0. Can be set to None to keep all papers.
+        path (str, optional): The path where the file should be saved. Defaults to None, which saves the files to the local home directory.
+
+    Returns:
+        None
+    """
+
+    # Convert the input date strings to datetime objects
+    start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+    end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+
+    # Check if the start date is after the end date
+    if start_date > end_date:
+        print("Invalid date range. The start date should be before or equal to the end date.")
+        return
+
+    # Iterate over each date in the range
+    current_date = start_date
+    while current_date <= end_date:
+        #if current_date.weekday() < 5: # Check if the current date is a weekday (Monday to Friday)
+        
+        # Convert the current date to the desired format ('YYYY-MM-DD')
+        formatted_date = current_date.strftime('%Y-%m-%d')
+        print(f"Processing date: {formatted_date}")
+
+        # Create the class object for the current date
+        scraper = Scraper(date=formatted_date, user_input=user_input, path=path)
+
+        # Scrape papers from the input date
+        scraper.scrape_arxiv()
+
+        # Save all papers that were scraped
+        scraper.save_paper(index='all')
+
+        # Summarize the abstract of all papers and save the similarity score
+        if len(scraper.filenames) > 0:
+            
+            # Summarize the scraped files
+            scraper.summarize()
+
+            # Remove the papers with similarity scores less than some threshold
+            scraper.remove_irrelevant_papers(similarity_threshold=similarity_threshold)
+        else:
+            print(f"No papers found on this date: {formatted_date}")
+
+        # Move to the next day
+        current_date += timedelta(days=1)
+
+    return
 
 def replace_astronomical_terms(text):
     """
