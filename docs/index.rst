@@ -50,9 +50,10 @@ Given a continuous date range, you can use the ``scrape_and_analyze`` function, 
    start_date = '2023-04-01'
    end_date = '2023-04-30'
    user_input = 'Black holes'
-   similarity_threshold = 0.1
+   similarity_threshold = 0.01
+   path = None #Saves to the local home dir
 
-   astroph_summarizer.scrape_and_analyze(start_date, end_date, user_input=user_input, similarity_threshold=similarity_threshold, path=None)
+   astroph_summarizer.scrape_and_analyze(start_date, end_date, user_input=user_input, similarity_threshold=similarity_threshold, path=path)
 
 Note that the ``similarity_threshold`` parameter can be set to ``None``, in which case all papers within the specified date range will be saved.
 
