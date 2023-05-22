@@ -194,9 +194,12 @@ class Scraper:
 
         scraper = arxivscraper.Scraper(category='physics:astro-ph', date_from=self.date, date_until=self.date)
         output = scraper.scrape()
-        
-        self.df = pd.DataFrame(output, columns=('id', 'title', 'categories', 'abstract', 'doi', 'created', 'updated', 'authors'))
-        
+
+        try:
+            self.df = pd.DataFrame(output, columns=('id', 'title', 'categories', 'abstract', 'doi', 'created', 'updated', 'authors'))
+        except ValueError:
+            print('No papers available on this date.')
+
         return
 
     def save_paper(self, index):
@@ -539,19 +542,20 @@ def scrape_and_analyze(start_date_str, end_date_str, user_input=None, similarity
         # Scrape papers from the input date
         scraper.scrape_arxiv()
 
-        # Save all papers that were scraped
-        scraper.save_paper(index='all')
+        if scraper.df is not None: #None if no papers were scraped on that date
+            # Save all papers that were scraped
+            scraper.save_paper(index='all')
 
-        # Summarize the abstract of all papers and save the similarity score
-        if len(scraper.filenames) > 0:
-            
-            # Summarize the scraped files
-            scraper.summarize()
+            # Summarize the abstract of all papers and save the similarity score
+            if len(scraper.filenames) > 0:
+                
+                # Summarize the scraped files
+                scraper.summarize()
 
-            # Remove the papers with similarity scores less than some threshold
-            scraper.remove_irrelevant_papers(similarity_threshold=similarity_threshold)
-        else:
-            print(f"No papers found on this date: {formatted_date}")
+                # Remove the papers with similarity scores less than some threshold
+                scraper.remove_irrelevant_papers(similarity_threshold=similarity_threshold)
+            else:
+                print(f"No papers found on this date: {formatted_date}")
 
         # Move to the next day
         current_date += timedelta(days=1)
