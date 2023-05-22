@@ -57,6 +57,11 @@ Given a continuous date range, you can use the ``scrape_and_analyze`` function, 
 
 Note that the ``similarity_threshold`` parameter can be set to ``None``, in which case all papers within the specified date range will be saved.
 
+503 Error
+------------
+
+When scraping the arXiv files, users may encounter a "503 error" which is an HTTP status code indicating that the service is temporarily down. This can happen when the designated arXiv server is unable to process the request because of heavy traffic, scheduled maintenance, or other ad hoc problems. The program will try re-connecting to the server every 30 seconds, but if the error persists it is advised to terminate the program and try again later. 
+
 Important
 ------------
 

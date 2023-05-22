@@ -21,9 +21,3 @@ Identical Author Names
 If two separate papers have a first author with the same last name, and one of these papers falls outside the date range as per the aforementioned issue, both papers will ultimately end up being removed. This is because each paper is saved in the following format: first_author_last_name_YYYY, which yields overwrite problems.
 
 Future program development will address this issue. 
-
-
-
-
-
-
