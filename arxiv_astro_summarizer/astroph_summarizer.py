@@ -190,7 +190,7 @@ class Scraper:
         """
         
         if not isinstance(self.date, str):
-            raise ValueError('date should be a string in the format YYYY-MM-DD')
+            raise ValueError('The input date should be a string in the format YYYY-MM-DD')
 
         scraper = arxivscraper.Scraper(category='physics:astro-ph', date_from=self.date, date_until=self.date)
         output = scraper.scrape()
@@ -198,7 +198,7 @@ class Scraper:
         try:
             self.df = pd.DataFrame(output, columns=('id', 'title', 'categories', 'abstract', 'doi', 'created', 'updated', 'authors'))
         except ValueError:
-            print('No papers available on this date.')
+            print(); print('No papers available on this date.')
 
         return
 
@@ -260,7 +260,7 @@ class Scraper:
                         os.remove(self.path + filename)
                         #print(f"{filename[:-4]} outside date range, removing...")
                 except Exception as e:
-                    print('An error occurred while downloading the PDF: {}'.format(str(e)))
+                    print(); print('An error occurred while downloading the PDF: {}'.format(str(e)))
 
                 progess_bar.next()
 
@@ -283,7 +283,7 @@ class Scraper:
                     os.remove(self.path + filename)
                     #print(f"{filename[:-4]} outside date range, removing...")
             except Exception as e:
-                print('An error occurred while downloading the PDF: {}'.format(str(e)))
+                print(); print('An error occurred while downloading the PDF: {}'.format(str(e)))
 
         return
 
@@ -386,7 +386,7 @@ class Scraper:
                 print(); print(f"WARNING: Could not find file: {self.path+fname}")
 
             if self.raw_text == '':
-                print(f"Could not extract abstract for: {fname}")
+                print(); print(f"Could not extract abstract for: {fname}")
                 summaries.append('!!!Could not extract abstract!!!'); authors.append(fname)
                 if self.user_input is not None:
                     similarity_score.append(self.is_related(generated_summary))
@@ -416,12 +416,12 @@ class Scraper:
                 if self.user_input is not None:
                     similarity_score.append(self.is_related(generated_summary))
             except Exception as e:
-                print(f"Error occurred while summarizing {fname}: {str(e)}")
+                print(); print(f"Error occurred while summarizing {fname}: {str(e)}")
 
                 if self.user_input is not None:
                     similarity_score.append(self.is_related(generated_summary))
             except Exception as e:
-                print(f"Error occurred while summarizing {fname}: {str(e)}")
+                print(); print(f"Error occurred while summarizing {fname}: {str(e)}")
 
             progess_bar.next()
 
@@ -483,7 +483,7 @@ class Scraper:
             raise ValueError('The df attribute does not yet exist, run the summarize() class method first!')
 
         if len(np.where(self.df.Similarity > similarity_threshold)[0]) == 0:
-            print('NOTE: No papers with similarity scores above the similarity_threshold were detected! Removing all...')
+            print(); print('NOTE: No papers with similarity scores above the similarity_threshold were detected! Removing all...')
 
         indices = np.where(self.df.Similarity <= similarity_threshold)[0]
 
@@ -524,7 +524,7 @@ def scrape_and_analyze(start_date_str, end_date_str, user_input=None, similarity
 
     # Check if the start date is after the end date
     if start_date > end_date:
-        print("Invalid date range. The start date should be before or equal to the end date.")
+        print(); print("Invalid date range. The start date should be before or equal to the end date.")
         return
 
     # Iterate over each date in the range
@@ -534,7 +534,7 @@ def scrape_and_analyze(start_date_str, end_date_str, user_input=None, similarity
         
         # Convert the current date to the desired format ('YYYY-MM-DD')
         formatted_date = current_date.strftime('%Y-%m-%d')
-        print(f"Processing date: {formatted_date}")
+        print(); print(f"Processing date: {formatted_date}")
 
         # Create the class object for the current date
         scraper = Scraper(date=formatted_date, user_input=user_input, path=path)
@@ -555,7 +555,7 @@ def scrape_and_analyze(start_date_str, end_date_str, user_input=None, similarity
                 # Remove the papers with similarity scores less than some threshold
                 scraper.remove_irrelevant_papers(similarity_threshold=similarity_threshold)
             else:
-                print(f"No papers found on this date: {formatted_date}")
+                print(); print(f"No papers found on this date: {formatted_date}")
 
         # Move to the next day
         current_date += timedelta(days=1)
