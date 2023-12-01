@@ -44,6 +44,8 @@ class Scraper:
         date (str): The date to consider for scraping, in the following format: YYYY-MM-DD, e.g. '2022-05-12'.
         user_input (str, optional): A short excerpt describing the kind of papers the user is interested in. Defaults to None.
         path (str, optional): The path where the file should be saved. Defaults to None, which saves the files to the local home directory.
+        enforce_date (bool): If True, papers without the date printed on the first page will be removed.
+            This is an option due to the Defaults to True.
 
     Attributes:
         df (pandas.DataFrame): DataFrame containing the metadata of the scraped arXiv papers.
@@ -55,11 +57,12 @@ class Scraper:
         ValueError: If the input date is not a string or if user_input is not a string when provided.
     """
 
-    def __init__(self, date, user_input=None, path=None):
+    def __init__(self, date, user_input=None, path=None, enforce_date=True):
         self.date = date
         self.user_input = user_input
         self.path = path
-        
+        self.enforce_date = enforce_date
+
         self.df = None
         self.text = None 
         self.raw_text = None 
@@ -198,7 +201,7 @@ class Scraper:
         try:
             self.df = pd.DataFrame(output, columns=('id', 'title', 'categories', 'abstract', 'doi', 'created', 'updated', 'authors'))
         except ValueError:
-            print(); print('No papers available on this date.')
+            print(); print('No papers found on this date.')
 
         return
 
@@ -257,8 +260,11 @@ class Scraper:
                         #print('File saved in: {}'.format(self.path + filename))
                         self.filenames.append(filename)
                     else:
-                        os.remove(self.path + filename)
-                        #print(f"{filename[:-4]} outside date range, removing...")
+                        if self.enforce_date:
+                            os.remove(self.path + filename)
+                            #print(f"{filename[:-4]} outside date range, removing...")
+                        else:
+                            self.filenames.append(filename)
                 except Exception as e:
                     print(); print('An error occurred while downloading the PDF: {}'.format(str(e)))
 
@@ -280,10 +286,16 @@ class Scraper:
                     #print('File saved in: {}'.format(self.path + filename))
                     self.filenames.append(filename)
                 else:
-                    os.remove(self.path + filename)
-                    #print(f"{filename[:-4]} outside date range, removing...")
+                    if self.enforce_date:
+                        os.remove(self.path + filename)
+                        #print(f"{filename[:-4]} outside date range, removing...")
+                    else:
+                        self.filenames.append(filename)
             except Exception as e:
                 print(); print('An error occurred while downloading the PDF: {}'.format(str(e)))
+
+        if len(self.filenames) == 0:
+            print('NOTE: None of the scraped arxiv papers fell within the specified date range! Try a different date and run again.')
 
         return
 
@@ -497,7 +509,7 @@ class Scraper:
 
         return 
 
-def scrape_and_analyze(start_date_str, end_date_str, user_input=None, similarity_threshold=None, path=None):
+def scrape_and_analyze(start_date_str, end_date_str, user_input=None, similarity_threshold=None, path=None, enforce_date=True):
     """
     Scrape and process astrophysics papers from arXiv for a range of dates (Monday to Friday only!).
     
@@ -513,6 +525,8 @@ def scrape_and_analyze(start_date_str, end_date_str, user_input=None, similarity
         similarity_threshold (float): Papers with similarity scores below this threshold will be deleted.
             Defaults to 0. Can be set to None to keep all papers.
         path (str, optional): The path where the file should be saved. Defaults to None, which saves the files to the local home directory.
+        enforce_date (bool): If True, papers without the date printed on the first page will be removed.
+            Defaults to True.
 
     Returns:
         None
@@ -534,10 +548,10 @@ def scrape_and_analyze(start_date_str, end_date_str, user_input=None, similarity
         
         # Convert the current date to the desired format ('YYYY-MM-DD')
         formatted_date = current_date.strftime('%Y-%m-%d')
-        print(); print(f"Processing date: {formatted_date}")
+        print(); print(f"Processing date: {formatted_date}"); print()
 
         # Create the class object for the current date
-        scraper = Scraper(date=formatted_date, user_input=user_input, path=path)
+        scraper = Scraper(date=formatted_date, user_input=user_input, path=path, enforce_date=enforce_date)
 
         # Scrape papers from the input date
         scraper.scrape_arxiv()
@@ -555,7 +569,7 @@ def scrape_and_analyze(start_date_str, end_date_str, user_input=None, similarity
                 # Remove the papers with similarity scores less than some threshold
                 scraper.remove_irrelevant_papers(similarity_threshold=similarity_threshold)
             else:
-                print(); print(f"No papers found on this date: {formatted_date}")
+                print(); print(f"No valid papers found on this date: {formatted_date}")
 
         # Move to the next day
         current_date += timedelta(days=1)
