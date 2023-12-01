@@ -5,7 +5,9 @@
 
 Welcome to arxiv-astro-summarizer's documentation!
 ===============================
-This is an open-source program for scraping Astro-ph papers from the arXiv on some given date, summarizing the abstract, and comparing the preprocessed abstract text to some specified user input, from which a similarity score is computed. This program can be used to scrape daily papers and filter for those relevant to some research topic(s).
+This is an open-source program for scraping Astro-ph papers from the arXiv on some given date(s), summarizing the abstract, and comparing the preprocessed abstract text to some specified user input, from which a similarity score is computed. This program can be used to scrape papers and filter for those relevant to some research topic(s).
+
+I wrote this code as a means of improving my literature review skills -- this code works great when run daily on a crontab. Please raise any questions or suggestions as a GitHub issue.
 
 Installation
 ------------
@@ -15,8 +17,10 @@ The current stable version can be installed via pip:
 
     pip install arxiv-astro-summarizer
 
-Example: Single Date
+Example 1: Single Date
 ------------
+
+To scrape papers posted on a single date, you can call the `Scraper <https://arxiv-astro-summarizer.readthedocs.io/en/latest/autoapi/arxiv_astro_summarizer/astroph_summarizer/index.html#arxiv_astro_summarizer.astroph_summarizer.Scraper>`_ class directly, available in the  `astroph_summarizer <https://arxiv-astro-summarizer.readthedocs.io/en/latest/autoapi/arxiv_astro_summarizer/astroph_summarizer/index.html>`_ module. In the below example we will search the Astro-ph published on May 12, 2023, and will extract those related to black holes. Note the data format requirement, and while in this example we are interested only in black holes, the ``user_input`` parameter can contain multiple subjects (e.g. 'blach holes ram pressure stripping jellyfish galaxies'). The ``path`` parameter is the directory where the papers in .pdf format will be saved, which defaults to ``None`` in which case all the papers are saved in the local home.
 
 .. code-block:: python
    
@@ -40,10 +44,10 @@ Example: Single Date
    #Remove the papers with similarity scores less than some threshold 
    scraper.remove_irrelevant_papers(similarity_threshold=0)
 
-Example: Date Range
+Example 2: Date Range
 ------------
 
-Given a continuous date range, you can use the ``scrape_and_analyze`` function, which will loop through the dates to automatically perform the above steps for you:
+Given a continuous date range, you can use the `scrape_and_analyze <https://arxiv-astro-summarizer.readthedocs.io/en/latest/autoapi/arxiv_astro_summarizer/astroph_summarizer/index.html#arxiv_astro_summarizer.astroph_summarizer.scrape_and_analyze>`_ function, which will loop through the dates to automatically perform the above steps for you -- this is the recommended approach.
 
 .. code-block:: python
 
@@ -60,7 +64,7 @@ Note that the ``similarity_threshold`` parameter can be set to ``None``, in whic
 503 Error
 ------------
 
-When scraping the arXiv files, users may encounter a "503 error" which is an HTTP status code indicating that the service is temporarily down. This can happen when the designated arXiv server is unable to process the request because of heavy traffic, scheduled maintenance, or other ad hoc problems. The program will try re-connecting to the server every 30 seconds, but if the error persists it is advised to terminate the program and try again later. 
+When scraping the arXiv files, users may encounter a "503 error" which is an HTTP status code indicating that the service is temporarily down. This can happen when the designated arXiv server is unable to process the request because of heavy traffic, scheduled maintenance, or other ad hoc problems. The program will try re-connecting to the server every 30 seconds, but if the error persists it is advised to terminate the program and try again later.
 
 Important
 ------------
