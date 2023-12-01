@@ -9,13 +9,13 @@ import re
 import logging
 import requests
 import unicodedata
-import textract
 import datefinder
 from progress import bar
 
-import arxivscraper
+import pdfplumber
 import numpy as np 
 import pandas as pd
+import arxivscraper
 from pathlib import Path
 from PyPDF2 import PdfReader
 from datetime import datetime, timedelta
@@ -24,7 +24,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 from transformers import pipeline
 logging.getLogger("transformers").setLevel(logging.ERROR)
 import os; os.environ['TOKENIZERS_PARALLELISM'] = 'false'
-from textract.exceptions import MissingFileError
 
 import nltk
 try:
@@ -35,6 +34,7 @@ nltk.download('stopwords'); nltk.download('stopwords'); nltk.download('wordnet')
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+
 
 class Scraper:
     """
@@ -58,6 +58,7 @@ class Scraper:
     """
 
     def __init__(self, date, user_input=None, path=None, enforce_date=True):
+
         self.date = date
         self.user_input = user_input
         self.path = path
@@ -309,8 +310,24 @@ class Scraper:
         Returns:
             str: The extracted abstract text.
         """
+        
+        # Extract all the text
+        try:
+            with pdfplumber.open(filename) as pdf:
+                
+                # To store the text
+                self.raw_text = ''
+                
+                # Determine the number of pages in the PDF
+                num_pages = len(pdf.pages)
 
-        self.raw_text = textract.process(filename, method='pdfminer').decode('utf-8')
+                # Extract text from the first 5 pages or all available pages if there are fewer than 5
+                for page in sorted(pdf.pages[:min(5, num_pages)], key=lambda x: x.page_number):
+                    self.raw_text += page.extract_text(encoding='utf-8')
+        
+        except Exception as e:
+            print(f"Program encountered an error: {e}")
+            text = ''
 
         # Check if the word "abstract" is present
         match_abstract = re.search(r'Abstract([\s\S]+?)(?:Key\s*words|$)', self.raw_text, re.IGNORECASE)
@@ -394,14 +411,14 @@ class Scraper:
         for fname in self.filenames:
             try:
                 self.extract_abstract_from_pdf(filename=self.path+fname) #Creates the ``raw_text`` attribute
-            except MissingFileError: 
+            except:
                 print(); print(f"WARNING: Could not find file: {self.path+fname}")
 
             if self.raw_text == '':
-                print(); print(f"Could not extract abstract for: {fname}")
+                #print(); print(f"Could not extract abstract for: {fname}")
                 summaries.append('!!!Could not extract abstract!!!'); authors.append(fname)
-                if self.user_input is not None:
-                    similarity_score.append(self.is_related(generated_summary))
+                if self.user_input is not None: similarity_score.append(-999)
+                progess_bar.next()
                 continue
                 
             self.process_abstract() #Creates the ``text`` attribute
