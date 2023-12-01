@@ -1,15 +1,20 @@
 # Read the Docs configuration file
 # See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
-
+formats:
 version: 2
 
-sphinx:
+sphinx:he version of Python
   configuration: docs/conf.py
-
+  os: ubuntu-22.04
 formats:
-  - pdf
+  - pdfhon: "3.7"
 
+# Set the version of Python
+build:all:
+  os: ubuntu-22.04docs/requirements.txt
+  tools:
+    python: "3.7"
+~
 python:
-  version: 3.7
   install:
-    - requirements: docs/requirements.txt
+  - requirements: docs/requirements.txt
