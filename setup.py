@@ -9,7 +9,7 @@ from setuptools import setup, find_packages, Extension
 
 setup(
     name="arxiv-astro-summarizer",
-    version="1.2",
+    version="1.3",
     author="Daniel Godines",
     author_email="danielgodinez123@gmail.com",
     description="Scrapes arXiv astro-ph paper, summarizes the abstract, and returns relavant papers according to a user input.",
@@ -23,7 +23,7 @@ setup(
 		'Programming Language :: Python :: 3',	   
 ],
     packages=find_packages('.'),
-    install_requires = ['numpy', 'requests', 'arxivscraper', 'pandas', 'PyPDF2', 'transformers', 'scikit-learn', 'nltk', 'textract', 'datefinder', 'tensorflow', 'torch', 'progress'],
+    install_requires = ['numpy', 'requests', 'arxivscraper', 'pandas', 'PyPDF2', 'transformers', 'scikit-learn', 'nltk', 'datefinder', 'tensorflow', 'torch', 'progress', 'pdfplumber'],
     python_requires='>=3.7,<4',
     include_package_data=True,
     test_suite="nose.collector",
