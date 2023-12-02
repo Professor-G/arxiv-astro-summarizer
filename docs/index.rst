@@ -20,7 +20,7 @@ The current stable version can be installed via pip:
 Example 1: Single Date
 ------------
 
-To scrape papers posted on a single date, you can call the `Scraper <https://arxiv-astro-summarizer.readthedocs.io/en/latest/autoapi/arxiv_astro_summarizer/astroph_summarizer/index.html#arxiv_astro_summarizer.astroph_summarizer.Scraper>`_ class directly, available in the  `astroph_summarizer <https://arxiv-astro-summarizer.readthedocs.io/en/latest/autoapi/arxiv_astro_summarizer/astroph_summarizer/index.html>`_ module. In the below example we will search the Astro-ph published on May 12, 2023, and will extract those related to black holes. Note the data format requirement, and while in this example we are interested only in black holes, the ``user_input`` parameter can contain multiple subjects (e.g. 'black holes ram pressure stripping jellyfish galaxies'). The ``path`` parameter is the directory where the papers in .pdf format will be saved, which defaults to ``None`` in which case all the papers are saved in the local home.
+To scrape papers posted on a single date, you can call the `Scraper <https://arxiv-astro-summarizer.readthedocs.io/en/latest/autoapi/arxiv_astro_summarizer/astroph_summarizer/index.html#arxiv_astro_summarizer.astroph_summarizer.Scraper>`_ class directly, available in the  `astroph_summarizer <https://arxiv-astro-summarizer.readthedocs.io/en/latest/autoapi/arxiv_astro_summarizer/astroph_summarizer/index.html>`_ module. In the below example, we will search the Astro-ph papers published on the arXiv on May 12, 2023, and we will extract those related to black holes. Note the data format requirement, and while in this example we are interested only in black holes, the ``user_input`` parameter can contain multiple subjects (e.g. 'black holes ram pressure stripping jellyfish galaxies'). The ``path`` parameter is the directory where the papers in .pdf format will be saved, which defaults to ``None`` in which case all the papers are saved in the local home.
 
 .. code-block:: python
    
@@ -47,7 +47,7 @@ To scrape papers posted on a single date, you can call the `Scraper <https://arx
 Example 2: Date Range
 ------------
 
-Given a continuous date range, you can use the `scrape_and_analyze <https://arxiv-astro-summarizer.readthedocs.io/en/latest/autoapi/arxiv_astro_summarizer/astroph_summarizer/index.html#arxiv_astro_summarizer.astroph_summarizer.scrape_and_analyze>`_ function, which will loop through the dates to automatically perform the above steps for you -- this is the recommended approach.
+Given a continuous date range, you can use the `scrape_and_analyze <https://arxiv-astro-summarizer.readthedocs.io/en/latest/autoapi/arxiv_astro_summarizer/astroph_summarizer/index.html#arxiv_astro_summarizer.astroph_summarizer.scrape_and_analyze>`_ function, which will loop through the dates to automatically perform the above steps for you.
 
 .. code-block:: python
 
