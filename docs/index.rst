@@ -27,7 +27,7 @@ To scrape papers posted on a single date, you can call the `Scraper <https://arx
    from arxiv_astro_summarizer import astroph_summarizer
    
    #Create the class object
-   scraper = astroph_summarizer.Scraper(date='2023-05-12', user_input='Black holes', path='/Users/daniel/Desktop/test')
+   scraper = astroph_summarizer.Scraper(date='2023-05-12', user_input='Black holes', path=None)
 
    #Scrape papers from the input date
    scraper.scrape_arxiv()
@@ -42,7 +42,7 @@ To scrape papers posted on a single date, you can call the `Scraper <https://arx
    scraper.df 
    
    #Remove the papers with similarity scores less than some threshold 
-   scraper.remove_irrelevant_papers(similarity_threshold=0)
+   scraper.remove_irrelevant_papers(similarity_threshold=0.01)
 
 Example 2: Date Range
 ------------
@@ -52,10 +52,10 @@ Given a continuous date range, you can use the `scrape_and_analyze <https://arxi
 .. code-block:: python
 
    start_date = '2023-04-01'
-   end_date = '2023-04-30'
-   user_input = 'Black holes'
+   end_date = '2023-04-10'
+   user_input = 'Protoplanetary'
    similarity_threshold = 0.01
-   path = None #Saves to the local home dir
+   path = None #Saves to the local home directory
 
    astroph_summarizer.scrape_and_analyze(start_date, end_date, user_input=user_input, similarity_threshold=similarity_threshold, path=path)
 
